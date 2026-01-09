@@ -9,10 +9,10 @@ type WindowLifeCycle interface {
 }
 
 type Window struct {
-	vsync            bool
-	width            int32
-	height           int32
-	title            string
+	Vsync            bool
+	Width            int32
+	Height           int32
+	Title            string
 	lifeCycleHandler WindowLifeCycle
 }
 
@@ -20,13 +20,22 @@ func (win *Window) Init(title string, lifeCycle WindowLifeCycle) {
 	win.lifeCycleHandler = lifeCycle
 	defer win.lifeCycleHandler.OnStart()
 
-	if win.title == "" {
-		win.title = title
+	if win.Title == "" {
+		win.Title = title
 	}
-	rl.InitWindow(win.width, win.height, win.title)
 
-	if win.vsync {
-		rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(rl.GetCurrentMonitor())))
+	var monitor = rl.GetCurrentMonitor()
+
+	if win.Height == 0 || win.Width == 0 {
+		width := int32(rl.GetMonitorWidth(monitor))
+		height := int32(rl.GetMonitorHeight(monitor))
+		win.Width = width / 2
+		win.Height = height / 2
+	}
+	rl.InitWindow(win.Width, win.Height, win.Title)
+
+	if win.Vsync {
+		rl.SetTargetFPS(int32(rl.GetMonitorRefreshRate(monitor)))
 	}
 }
 
